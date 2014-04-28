@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>用户服务模块上传</title>
+<script type="text/javascript"  src="get_xhrqe.js"> </script>
+<script type="text/javascript"  src="/libs/jquery/1.11.0/jquery.js"> </script>
+<script type="text/javascript"  src="/libs/jquery/jquery.form.js"> </script>
+</head>
+
+<body>
+<form action="fileupload.app" method="post" enctype="multipart/form-data">
+<p>选择文件:
+<input type="file" name="svfile" />
+服务名: <input type="text" name="svname"><br>
+<input type="submit" value="Send" />
+</p>
+</form>
+
+<textarea> 
+    for (var i=0; i < 10; i++) { 
+        // do some processing 
+    } 
+</textarea>
+
+<!--<form id="fileupload" name="fileupload" method="post" action="filereceive.app">
+请选择文件:<input type="file" id="your-files" multiple> <br>
+服务名: <input type="text" name="name1"><br>
+服务名2: <input type="text" name="name2"><br>-->
+<!--参数1名称: <input type="args1_name" name="args1_name">
+参数1类型: <input type="args1_type" name="args1_type">
+<br>
+参数2名称: <input type="args1_name" name="args1_name">
+参数2类型: <input type="args1_type" name="args1_type">
+<br>
+参数3名称: <input type="args1_name" name="args1_name">
+参数3类型: <input type="args1_type" name="args1_type">
+<br>
+<input type="submit" value="Submit">
+</form>-->
+
+<button id=cu onclick='testacction()'>submit</button>
+<script>
+var svr_addr='http://192.168.0.13:8089'
+/*var control = document.getElementById("your-files");
+control.addEventListener("change", 
+						  function(event) {
+    				 	  	// 当 control 改变的时候
+    			  		  	uploadAndSubmit(control.files)
+							}, false);*/
+
+function testacction() {
+	var xhr = GetXmlHttpRequest();
+	var svr_url=/*svr_addr+*/"/service/demouser/pro/tcjar.jar"
+	//var svr_url=/*svr_addr+*/"/page/te.html"
+	xhr.open("POST",svr_url,true);
+	//xhr.open("GET",svr_url,true); 
+	xhr.send('50 65');
+	xhr.onreadystatechange = function() {
+ 		if (xhr.readyState == 4&&xhr.status == 200) {
+			var xmlDoc=xhr.responseText;
+			alert(xmlDoc);
+ 			} 
+		}//onreadystatechange-function()
+	}
+	
+	
+/*	function GetXmlHttpRequest()
+{
+	
+	var xmlHttp=null;
+	try
+	{
+		xmlHttp=new XMLHttpRequest();
+		}
+		catch(e)
+		{
+			try
+			{
+				xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+				}
+				catch(e)
+				{
+					try
+					{
+						xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+						}
+						catch(e)
+						{
+							xmlHttp=false;
+							}
+					}
+			}
+			
+			return xmlHttp;
+	}*/
+	
+	
+
+function uploadAndSubmit(files) {
+	if (files.length > 0) { 
+ 		// 寻找表单域中的 <input type="file" ... /> 标签
+		var file = files[0]; 
+		// try sending
+		var reader = new FileReader();
+		
+		reader.onloadstart = function() { 
+			// 这个事件在读取开始时触发
+			console.log("onloadstart"); 
+			//document.getElementById("bytesTotal").textContent = file.size; 
+			} 
+		reader.onprogress = function(p) { 
+			// 这个事件在读取进行中定时触发
+			console.log("onprogress"); 
+			//document.getElementById("bytesRead").textContent = p.loaded; 
+			} 
+
+ 		reader.onload = function() { 
+    		// 这个事件在读取成功结束后触发
+ 			console.log("load complete"); 
+ 			} 
+
+ 		reader.onloadend = function() { 
+    		// 这个事件在读取结束后，无论成功或者失败都会触发
+ 			if (reader.error) {
+ 				console.log(reader.error); 
+ 				}
+			else { 
+ 				//document.getElementById("bytesRead").textContent = file.size; 
+ 				// 构造 XMLHttpRequest 对象，发送文件 Binary 数据
+ 				var xhr = GetXmlHttpRequest();
+				var svr_url=/*svr_addr+*/"/fileupload.app"
+ 				xhr.open("POST", 
+ 						 svr_url
+ 						 ,true/*, async, default to true */); 
+ 				//xhr.overrideMimeType("application/octet-stream");
+ 				xhr.send();
+ 				xhr.onreadystatechange = function() {
+					console.log('----------------')
+					console.log("readyState"+xhr.readyState)
+					console.log("status"+xhr.status)
+					console.log('----------------')
+					
+ 					if (xhr.readyState == 4&&xhr.status == 200) {
+							alert("上传成功！")
+ 							console.log("upload complete"); 
+ 							console.log("response: " + xhr.responseText); 
+ 						} 
+			 		}//onreadystatechange-function()
+				
+				//xhr.sendAsBinary(reader.result); 
+ 				}//if-else 
+ 			} //reader.onlaodend
+
+ 			reader.readAsBinaryString(file); 
+ 		} 
+		else { 
+ 		alert ("Please choose a file."); 
+ 		} 
+ 	} 
+</script>
+</body>
+</html>
