@@ -66,22 +66,29 @@ class Wsgi_Apps(object):
 				request_body_size = int(environ.get('CONTENT_LENGTH',0))
 			except ValueError:
 				request_body_size=0
-			contenttype = environ["CONTENT_TYPE"]
-			boundary = contenttype.split(';')[-1].split('=')[-1].strip()
 			fileds=cgi.FieldStorage(environ["wsgi.input"],environ=environ)
-			sv_data = self.multipartencode.encode(fileds['svfile'],boundary)
 			svname = fileds['svname'].value
 			vm_id = fileds['vm_id'].value
-			arg1 = fileds['arg1'].value
-			arg2 = fileds['arg2'].value
 			vm_ip = self.mysql.getvm_ip(vm_id);
 			sv_port = '8089'
 			user_id = '2'
-			sv_url = 'http://'+vm_ip+":8089/service/demouser/pro/"+fileds['svfile'].filename
-			
+			sv_id = self.mysql.insertsvtb(svname,user_id,vm_ip,sv_port)
+			sv_name = sv_id+"."+fileds['svfile'].filename.split('.')[-1].strip()
+			sv_url = 'http://'+vm_ip+":8089/service/demouser/pro/"+sv_name
+			self.mysql.updatesv_url(sv_id,sv_url)
+			#insert arg table
+			arg_num = 1
+			arg = "arg"+str(arg_num)
+			while arg in fileds:
+				self.mysql.insertsvargtb(sv_id,arg_num,fileds[arg].value)
+				arg_num+=1
+				arg = "arg"+str(arg_num)	
+
 			#insert database for store the infromation of service
-			self.mysql.insertsvtb(svname,user_id,vm_ip,sv_port,sv_url)
 			#data = environ["wsgi.input"].read(request_body_size)
+			contenttype = environ["CONTENT_TYPE"]
+			boundary = contenttype.split(';')[-1].split('=')[-1].strip()
+			sv_data = self.multipartencode.encode(sv_name,fileds['svfile'],boundary)
 			self.fileupload.upload_file(vm_ip,contenttype,sv_data)
 			'''
 			f = file("../service/demouser/pro/"+fileds['svfile'].filename,'w')

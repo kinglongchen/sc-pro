@@ -41,9 +41,19 @@ class Mysql(object):
 		self.cursor.execute(sql)
 		data = self.cursor.fetchall()
 		return data[0][0]
-	def insertsvtb(self,svname,user_id,sv_ip,sv_port,sv_url):
-		sql = 'insert into svtb(sv_name,user_id,sv_ip,sv_port,sv_url) values ("'+svname+'","'+user_id+'","'+sv_ip+'","'+sv_port+'","'+sv_url+'");'
+	def insertsvtb(self,svname,user_id,sv_ip,sv_port):
+		sql = 'insert into svtb(sv_name,user_id,sv_ip,sv_port) values ("'+svname+'","'+user_id+'","'+sv_ip+'","'+sv_port+'");'
 		#print sql
+		self.cursor.execute(sql)
+		sv_id = self.conn.insert_id()
+		self.conn.commit()
+		return str(sv_id)
+	def updatesv_url(self,sv_id,sv_url):
+		sql = 'update svtb set sv_url= "'+sv_url+'" where sv_id = "'+sv_id+'"'
+		self.cursor.execute(sql)
+		self.conn.commit()
+	def insertsvargtb(self,sv_id,arg_index,type_id):
+		sql = 'insert into svargtb(sv_id,arg_index,type_id) values ("'+sv_id+'","'+str(arg_index)+'","'+type_id+'");'
 		self.cursor.execute(sql)
 		self.conn.commit()
 	def close(self):
